@@ -3,7 +3,6 @@
 // put, patch
 // delete
 
-import axios from "axios";
 import instance from "../utils/axios";
 
 const albumApi = {

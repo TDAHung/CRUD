@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Form, Input, Label } from "reactstrap";
+import { Form, Input, Label, Alert } from "reactstrap";
 import albumApi from "../../api/album.api";
 import ConfirmModal from "../../components/ConfirmModal";
 
-const ModalEditAlbum = ({ editItem, closeModal, updateAlbum }) => {
+const ModalEditAlbum = ({ editItem, closeModal, updateAlbum, error, }) => {
     const [formvalue, setFormValue] = useState({
         title: ''
     });
@@ -19,7 +19,6 @@ const ModalEditAlbum = ({ editItem, closeModal, updateAlbum }) => {
     const onChange = (event) => {
         const { name, value } = event.target;
         setFormValue(prev => ({ ...prev, [name]: value }));
-        console.log(formvalue);
     }
 
     return (
@@ -31,6 +30,7 @@ const ModalEditAlbum = ({ editItem, closeModal, updateAlbum }) => {
             submitText={'Update'}
             onSubmit={async () => { await updateAlbum(formvalue) }}
         >
+            {error && <Alert color="danger">{error}</Alert>}
             <Form>
                 <Label for="title">Title</Label>
                 <Input type="text" value={formvalue.title}

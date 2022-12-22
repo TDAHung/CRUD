@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import reactLogo from './assets/react.svg';
+import { createContext, useEffect, useState } from 'react';
 import { Spinner } from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import HomePage from './pages/HomePage';
@@ -17,6 +16,10 @@ import PostsPage from './pages/PostsPage';
 // npm install axios bootstrap reactstrap react-router-dom
 
 // Global state (Thông tin,phân quyền, etc..) dùng cho toàn bộ các page nên tạo ra ở App
+export const GlobalContext = createContext({
+  user: null
+});
+
 function App() {
   // Tạo ra một cái state để check lúc render ra html bên dưới có user hay chưa
   const [loading, setLoading] = useState(true);
@@ -38,25 +41,27 @@ function App() {
 
 
   return (
-    <div className="App">
-      {loading ? <Spinner></Spinner> :
-        <Routes>
-          <Route path='' element={<Layout user={user} onChangeUser={onChangeUser} />}>
-            <Route path='/' element={
-              <RequireAuth user={user}>
-                <HomePage user={user} />
-              </RequireAuth>} />
-            <Route path='posts' element={<RequireAuth user={user}>
-              <PostsPage user={user} />
-            </RequireAuth>}></Route>
-            <Route path='album'>
-              <Route path=':albumId' element={<AlbumPage></AlbumPage>}></Route>
+    <GlobalContext.Provider value={{ userInfo: user }}>
+      <div className="App">
+        {loading ? <Spinner></Spinner> :
+          <Routes>
+            <Route path='' element={<Layout onChangeUser={onChangeUser} />}>
+              <Route path='/' element={
+                <RequireAuth >
+                  <HomePage />
+                </RequireAuth>} />
+              <Route path='posts' element={<RequireAuth user={user}>
+                <PostsPage user={user} />
+              </RequireAuth>}></Route>
+              <Route path='album'>
+                <Route path=':albumId' element={<AlbumPage></AlbumPage>}></Route>
+              </Route>
+              <Route path='login' element={<LoginPage onChangeUser={onChangeUser} />} />
             </Route>
-            <Route path='login' element={<LoginPage onChangeUser={onChangeUser} />} />
-          </Route>
-          <Route path='*' element={<Error404></Error404>}></Route>
-        </Routes>}
-    </div>
+            <Route path='*' element={<Error404></Error404>}></Route>
+          </Routes>}
+      </div>
+    </GlobalContext.Provider>
   )
 };
 

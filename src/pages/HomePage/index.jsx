@@ -5,31 +5,36 @@ import { Link } from "react-router-dom";
 import ConfirmModal from "../../components/ConfirmModal";
 import albumApi from "../../api/album.api";
 import ModalEditAlbum from "./ModalEditAlbum";
+import { useContext } from "react";
+import { GlobalContext } from "../../App";
 
-function HomePage({ user }) {
-
+function HomePage() {
+    const { userInfo } = useContext(GlobalContext);
     const [albums, setAlbums] = useState([]);
     const [editItem, setEditItem] = useState(null);
     const [deleteItemId, setDeleteItemId] = useState(null);
+    const [error, setError] = useState('');
 
-    const toggleConfirmModal = (AlbumId) => {
-        setDeleteItemId(AlbumId);
-    }
+    const toggleConfirmModal = (AlbumId) => setDeleteItemId(AlbumId);
 
     const onRemoveBtn = async () => {
-        const respone = await axios.delete(`https://jsonplaceholder.typicode.com/albums/${deleteItemId}`);
+        await axios.delete(`https://jsonplaceholder.typicode.com/albums/${deleteItemId}`);
         const newAlbums = albums.filter((item) => item.id !== deleteItemId);
         toggleConfirmModal(null);
         setAlbums(newAlbums);
     }
 
-    const onEditItem = (item) => {
-        setEditItem(item)
-    }
+    const onEditItem = (item) => setEditItem(item);
 
     const updateAlbum = async (newAlbum) => {
-        const response = await albumApi.update(editItem.id, newAlbum);
-        console.log(response);
+        const index = albums.findIndex(element => element.id === editItem.id);
+        if (index > -1) {
+            albums[index] = { ...albums[index], title: newAlbum.title };
+            setAlbums([...albums]);
+            await albumApi.update(editItem.id, albums[index]);
+        } else {
+            setError('Album not found');
+        }
         closeModalEdit();
     }
 
@@ -56,11 +61,11 @@ function HomePage({ user }) {
 
     useEffect(() => {
         const fetchPosts = async () => {
-            const response = await albumApi.getAll(user);
+            const response = await albumApi.getAll(userInfo);
             setAlbums(response.data);
         }
         fetchPosts();
-    }, [user]);
+    }, [userInfo]);
 
     return <div>
         <Table>
@@ -88,7 +93,7 @@ function HomePage({ user }) {
         >
             <div className="text-danger"> Delete Album have ID: {deleteItemId}</div>
         </ConfirmModal>
-        <ModalEditAlbum editItem={editItem} closeModal={() => { setEditItem(null) }} updateAlbum={updateAlbum} />
+        <ModalEditAlbum error={error} editItem={editItem} closeModal={() => { setEditItem(null) }} updateAlbum={updateAlbum} />
     </div>
 
 };

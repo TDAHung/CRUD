@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import {
     Collapse,
     Navbar,
@@ -13,8 +13,12 @@ import {
     DropdownItem,
 } from 'reactstrap';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { GlobalContext } from '../App';
 
-function Layout({ user, onChangeUser }) {
+function Layout({ onChangeUser }) {
+    const { userInfo } = useContext(GlobalContext);
+    console.log(userInfo);
+
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenDropdown, setIsOpenDropdown] = useState(false);
 
@@ -55,16 +59,12 @@ function Layout({ user, onChangeUser }) {
                         </Link>
                     </NavItem>
                 </Nav>
-                {user ? <Dropdown isOpen={isOpenDropdown} toggle={toggleDropdown} direction='down'>
-                    <DropdownToggle>{user.username}</DropdownToggle>
+                {userInfo ? <Dropdown isOpen={isOpenDropdown} toggle={toggleDropdown} direction='down'>
+                    <DropdownToggle>{userInfo.username}</DropdownToggle>
                     <DropdownMenu>
-                        <DropdownItem onClick={() => { onLogOutBtn(user.id) }}>Log out </DropdownItem>
+                        <DropdownItem onClick={() => { onLogOutBtn(userInfo.id) }}>Log out </DropdownItem>
                     </DropdownMenu>
                 </Dropdown> : <Button onClick={onClickBtn} outline className='primary'>Login</Button>}
-                {/* Sử dụng link thay vì dùng button và gắn sự kiện onClick cho nó */}
-                {/* {user ? <NavbarText>{user.username}</NavbarText> : <Link to="login" className='login-btn'>
-                    Login
-                </Link>} */}
             </Collapse>
         </Navbar>
         <Outlet></Outlet>

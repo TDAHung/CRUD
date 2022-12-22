@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button, Card, CardBody, CardTitle, CardText, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { useContext } from "react";
+import { GlobalContext } from "../../App";
 
-function PostsPage({ user }) {
+function PostsPage() {
 
-
+    const { userInfo } = useContext(GlobalContext);
     const [posts, setPosts] = useState({
         isLoading: false,
         data: []
@@ -44,7 +46,7 @@ function PostsPage({ user }) {
     useEffect(() => {
         async function getPostsByUserId() {
             setPosts(prev => ({ ...prev, isLoading: true }))
-            const respone = await axios.get(`https://jsonplaceholder.typicode.com/posts?userId=${user.id}`)
+            const respone = await axios.get(`https://jsonplaceholder.typicode.com/posts?userId=${userInfo.id}`)
             console.log(respone);
             setPosts(prev => ({ ...prev, isLoading: false, data: respone.data }))
         }
