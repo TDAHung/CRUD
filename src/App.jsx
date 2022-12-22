@@ -50,8 +50,8 @@ function App() {
                 <RequireAuth >
                   <HomePage />
                 </RequireAuth>} />
-              <Route path='posts' element={<RequireAuth user={user}>
-                <PostsPage user={user} />
+              <Route path='posts' element={<RequireAuth >
+                <PostsPage />
               </RequireAuth>}></Route>
               <Route path='album'>
                 <Route path=':albumId' element={<AlbumPage></AlbumPage>}></Route>
